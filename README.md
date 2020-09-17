@@ -7,5 +7,4 @@
 - Web-browser based UI, served over local network
 
 ## Screenshots
-<img src="https://github.com/Chris820/irrigation_system/blob/master/screen-1.png" alt="" width="250" height="445" />
-<img src="https://github.com/Chris820/irrigation_system/blob/master/screen-2.png" alt="" width="250" height="445" />
+<img src="https://github.com/Chris820/irrigation_system/blob/master/screen-1.png" alt="" width="250" height="445" /> <img src="https://github.com/Chris820/irrigation_system/blob/master/screen-2.png" alt="" width="250" height="445" />
