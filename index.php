@@ -27,7 +27,7 @@ function getstatus() {
   // Get the schedules
   $garden_schedule = file_get_contents('/var/www/html/data/schedules/garden');
   $lawn_schedule = file_get_contents('/var/www/html/data/schedules/lawn');
-  if ($garden_schedule != '') {  
+  if ($garden_schedule != '') {
     $status['garden']['schedule'] = explode('|',$garden_schedule);
   }
   if ($lawn_schedule != '') {
@@ -67,13 +67,13 @@ $status = getstatus(); ?>
   $tank_full = 200;
   $level = trim($status['tank']['level'][1]);
   $level = round((100 - (($level - $tank_full) * 100) / ($tank_empty - $tank_full)),1,PHP_ROUND_HALF_DOWN);
-  $label_date = date('g:ia, j F Y',$status['tank']['level'][0]); ?>  
+  $label_date = date('g:ia, j F Y',$status['tank']['level'][0]); ?>
   <div class="tank-visual">
     <div class="tank-visual-inner" style="height:<?php echo $level;?>%"></div>
     <p style="bottom:<?php echo $level;?>%;"><?php echo $level;?>%</p>
   </div>
   <div class="extended" id="tank-details">
-    <table class="tank-visual-history" 
+    <table class="tank-visual-history"
       data-graph-container-before="1"
       data-graph-type="area"
       data-graph-line-shadow="0"
@@ -121,7 +121,7 @@ $status = getstatus(); ?>
   <button id="garden-off" class="primary off ajaxid<?php if($status['garden']['state'] === '1') echo ' active'; ?>">Off</button>
   <button id="garden-on" class="primary on ajaxid<?php if($status['garden']['state'] === '0') echo ' active'; ?>">On</button>
   <div class="extended" id="garden-details">
-    <div class="form-radios">
+    <div class="form-radios" role="radiogroup" aria-label="Shedule to run on the following days">
       <input type="checkbox" id="garden-mon" name="garden-days" value="1"<?php if(strpos($status['garden']['schedule'][2],'1')) echo ' checked' ?>>
       <label for="garden-mon">Mon</label>
       <input type="checkbox" id="garden-tue" name="garden-days" value="2"<?php if(strpos($status['garden']['schedule'][2],'2')) echo ' checked' ?>>
@@ -149,11 +149,11 @@ $status = getstatus(); ?>
 </div>
 
 <h2 id="tab-lawn" class="tab"><a href="#"aria-label="Toggle lawn details" aria-controls="lawn-details"><span>Lawn</span></a></h2>
-<div id="panel-lawn" class="panel">  
+<div id="panel-lawn" class="panel">
   <button id="lawn-off" class="primary off ajaxid<?php if($status['lawn']['state'] === '1') echo ' active'; ?>">Off</button>
   <button id="lawn-on" class="primary on ajaxid<?php if($status['lawn']['state'] === '0') echo ' active'; ?>">On</button>
   <div class="extended"  id="lawn-details">
-    <div class="form-radios">
+    <div class="form-radios" role="radiogroup" aria-label="Shedule to run on the following days">
       <input type="checkbox" id="lawn-mon" name="lawn-days" value="1"<?php if(strpos($status['lawn']['schedule'][2],'1')) echo ' checked' ?>>
       <label for="lawn-mon">Mon</label>
       <input type="checkbox" id="lawn-tue" name="lawn-days" value="2"<?php if(strpos($status['lawn']['schedule'][2],'2')) echo ' checked' ?>>
