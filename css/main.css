@@ -1,0 +1,225 @@
+/*- Chris Lamb: Spetember 2020 -*/
+* {
+	margin: 0;
+	padding: 0;
+}
+@viewport{width:device-width}
+body, html { /* Prevent mobile (esp Safari) from resizing our fonts  */
+	-ms-text-size-adjust: none;
+	-moz-text-size-adjust: none;
+	-o-text-size-adjust: none;
+	-webkit-text-size-adjust: none;
+}
+body {
+	background-color: #e7e3d4;
+	color: #182628;
+	font: 14px 'Roboto', sans-serif;
+	margin: 0;
+	padding: 0 1rem 3rem 1rem;
+}
+svg {
+	font-family: 'Roboto', sans-serif !important;
+}
+p {
+	margin: .5rem 0;
+}
+a {
+	color: #182628;
+	font-weight: 600;
+	text-decoration: none;
+}
+h2.tab {
+	font-size: 1rem;
+	margin: 1em 0 0 0;
+}
+.tab a {
+	background-color: #90ccf4;
+	background-size: 1.5rem;
+	background-position: calc(100% - 1rem) 50%;
+	background-repeat: no-repeat;
+	color: #182628;
+	display: block;
+}
+.tab a.active {
+	background-color: #6babfb;
+}
+.tab a span {
+	background-size: 1.5rem;
+	background-position: .5rem 50%;
+	background-repeat: no-repeat;
+	display: block;
+	padding: .75rem .75rem .75rem 2.5rem;
+}
+#tab-tanks a {
+	background-image: url(../images/icon-chart.png);
+}
+#tab-tanks a span {
+	background-image: url(../images/icon-tank.png);
+}
+#tab-garden a {
+	background-image: url(../images/icon-schedule.png);
+}
+#tab-garden a span {
+	background-image: url(../images/icon-garden.png);
+}
+#tab-lawn a {
+	background-image: url(../images/icon-schedule.png);
+}
+#tab-lawn a span {
+	background-image: url(../images/icon-lawn.png);
+}
+.panel {
+	background-color: #FFF;
+	margin: 0 0 2em 0;
+	padding: 1rem;
+}
+.extended {
+	display: none;
+	padding-top: 1rem;
+}
+/* Tank Panel */
+.tank-visual {
+	border: 2px solid #666;
+	border-top: none;
+	height: 50px;
+	margin: 1rem 0 .5rem 1rem;
+	position: relative;
+	width: calc(50% - 5rem);
+}
+.tank-visual-inner {
+	background-color: rgba(69,114,167,0.75);
+	content: '';
+	display: block;
+	position: absolute;
+	left: -1px;
+	right: -1px;
+	bottom: -1px;
+}
+.tank-visual p {
+	left: calc(100% + .75rem);
+	font-weight: 600;
+	margin: 0;
+	position: absolute;
+	width: max-content;
+}
+.tank-visual p::after {
+	background-color: #666;
+	content: '';
+	display: block;
+	height: 2px;
+	left: -.75rem;
+	position: absolute;
+	width: .75rem;
+}
+#tank-history-select {
+	background-color: #fff;
+	border: 1px solid #666;
+	margin-left: calc(100% - 8rem);
+	padding: .25rem;
+	width: 7rem;
+}
+/* Primary Buttons */
+button {
+	cursor: pointer;
+	font-family: 'Roboto', sans-serif;
+	font-weight: 600;
+}
+button.primary {
+	background-color: #ddddd9;
+	border: none;
+	display: inline;
+	padding: .5rem 10%;
+}
+button.primary + button.primary {
+	margin-left: -5px;
+}
+button.primary.active,
+button.primary.on.active {
+	background-color: #66CE90;
+}
+button.primary.off.active {
+	background-color: #c96567;
+}
+/* Scheduling options */
+label {
+	display: inline-block;
+}
+.form-radios {
+	display: flex;
+	margin: 1rem 0;
+}
+input[type="checkbox"] {
+	left: -9999rem;
+	position: absolute;
+}
+.form-radios input[type="checkbox"] + label {
+	background-color: #ddddd9;
+	cursor: pointer;
+	padding: .5rem;
+	text-align: center;
+	width: calc(100% / 7)
+}
+.form-radios input[type="checkbox"]:checked + label {
+	background-color: #4d6d9a;
+	color: #FFF;
+}
+.form-times {
+	margin: 1rem 0 0 0;
+}
+.form-times label {
+	margin-right: 1rem;
+	width: calc((100% / 3) - 2rem);
+}
+input[type="time"] {
+	background-color: #fff;
+	border: 1px solid #666;
+	margin-bottom: 1rem;
+	padding: .25rem;
+	font: 1em 'Roboto', sans-serif;
+	width: calc((100% / 3) * 2);
+}
+/* Secondary Buttons */
+button.secondary {
+	background-color: transparent;
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: 2rem;
+	border: none;
+	height: 2rem;
+	text-indent: -9999rem;
+	width: 2rem;
+}
+button.secondary.confirm {
+	background-image: url(../images/icon-confirm.svg);
+	background-size: 1.8rem;
+}
+button.secondary.cancel {
+	background-image: url(../images/icon-cancel.svg);
+	background-size: 1.6rem;
+}
+button.secondary + button.secondary {
+	margin-left: .5rem;
+}
+/* Footer */
+#footer {
+	background-color: #e7e3d4;
+	bottom: 0;
+	left: 0;
+	padding: .5rem 1rem;
+	position: fixed;
+	right: 0;
+}
+#footer button#settings {
+	background: transparent url(../images/icon-settings.png) center center no-repeat;
+	background-size: 2rem;
+	border: none;
+	float: right;
+	height: 2rem;
+	text-indent: -9999rem;
+	width: 2rem;
+}
+#footer .extended {
+	clear: right;
+	padding-top: .5rem;
+	text-align: right;
+}
