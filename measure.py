@@ -8,7 +8,7 @@ import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BCM)
 # Set pins to use for trigger(output) and echo(input)
 GPIO.setup(23,GPIO.OUT) # trigger
-GPIO.setup(24,GPIO.IN) #echo
+GPIO.setup(24,GPIO.IN) # echo
 
 # Set trigger to False, then..
 GPIO.output(23, False)
@@ -18,12 +18,12 @@ GPIO.output(23, True)
 time.sleep(.00001)
 GPIO.output(23, False)
 
-# Record pulse times
+# Record times for leading and trailing edge of echo
 while GPIO.input(24)==0:
   start = time.time()
 while GPIO.input(24)==1:
   stop = time.time()
-# Calculate pulse length
+# Calculate echo length
 elapsed = stop-start
 # Multiply by the speed of sound (mm/second) then half to get the distance
 distance = ( elapsed * 343260 ) / 2
