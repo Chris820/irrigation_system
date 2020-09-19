@@ -38,7 +38,7 @@ if (date('gi') % 100 == 0) {
 	// Take a bunch of measurements
 	$measurements = array();
 	$i = 0;
-	while ($i < 16) {
+	while ($i < 24) {
 		$measurements[$i] = shell_exec('python /var/www/html/measure.py');
 		$i++;
 	}
@@ -50,7 +50,7 @@ if (date('gi') % 100 == 0) {
 	});
 	// Average the remainders
 	$average_measurement = array_sum($trimmed_measurements) / count($trimmed_measurements);
-	// Write to file	
+	// Write to file
 	$level =  time() .'|'. $average_measurement;
 	file_put_contents('/var/www/html/data/levels',$level . "\n", FILE_APPEND);
 	file_put_contents('/var/www/html/data/level',$level);

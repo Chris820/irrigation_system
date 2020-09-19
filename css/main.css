@@ -123,6 +123,7 @@ button {
 	cursor: pointer;
 	font-family: 'Roboto', sans-serif;
 	font-weight: 600;
+	outline: none;
 }
 button.primary {
 	background-color: #ddddd9;
@@ -202,7 +203,7 @@ button.secondary + button.secondary {
 }
 /* Footer */
 #footer {
-	background-color: #e7e3d4;
+	background-color: #ddddd9;
 	bottom: 0;
 	left: 0;
 	padding: .5rem 1rem;
@@ -216,7 +217,11 @@ button.secondary + button.secondary {
 	float: right;
 	height: 2rem;
 	text-indent: -9999rem;
+	transition: all 1s;
 	width: 2rem;
+}
+#footer button#settings.active {
+	transform: rotate(90deg);
 }
 #footer .extended {
 	clear: right;
