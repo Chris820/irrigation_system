@@ -42,7 +42,7 @@ if (date('gi') % 100 == 0) {
 		$measurements[$i] = shell_exec('python /var/www/html/measure.py');
 		$i++;
 	}
-	// Find the mode then filter the measurements to it as a whole number, this helps remove outliers
+	// Find the mode then filter the measurements to it, this helps remove outliers
 	$mode = find_mode($measurements);
 	$trimmed_measurements = array_filter($measurements, function($value) use ($mode) {
 		if (strpos(strval($value),strval($mode)) === 0) return true;
@@ -56,11 +56,11 @@ if (date('gi') % 100 == 0) {
 	file_put_contents('/var/www/html/data/level',$level);
 }
 
-# Helper: Find the mode as a whole number
+# Helper: Find the mode of the measurements (to the centimetre)
 function find_mode($dataset) {
 	$count = array();
   	foreach ($dataset as $value) {
-		$value = substr($value,0,strpos(strval($value),'.'));
+		$value = substr($value,0,2);
 		if (isset($count[$value])) $count[$value]++;
 		else $count[$value] = 1;
 	}
