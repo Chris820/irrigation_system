@@ -64,9 +64,10 @@ $status = getstatus(); ?>
   <?php // Work out the tank level as a percentage
   // TODO: Adjust for empty value
   $tank_empty = 2000;
-  $tank_full = 271;
+  $tank_full = 273;
   $level = trim($status['tank']['level'][1]);
   $level = round((100 - (($level - $tank_full) * 100) / ($tank_empty - $tank_full)),1,PHP_ROUND_HALF_DOWN);
+  if($level > 100) $level = 100;
   $label_date = date('g:ia, j F Y',$status['tank']['level'][0]); ?>
   <div class="tank-visual">
     <div class="tank-visual-inner" style="height:<?php echo $level;?>%"></div>
@@ -97,8 +98,8 @@ $status = getstatus(); ?>
       foreach($history as $date => $level) {
         echo '<tr>';
         echo '<td>'.date('ga, Y-m-d', $date).'</td>';
-        $level = (100 - (($level - $tank_full) * 100) / ($tank_empty - $tank_full));
-        $level = round($level, 1,PHP_ROUND_HALF_DOWN);
+        $level = round((100 - (($level - $tank_full) * 100) / ($tank_empty - $tank_full)),1,PHP_ROUND_HALF_DOWN);
+        if($level > 100) $level = 100;
         echo '<td>'.$level.'%</td>';
         echo '</tr>';
       } ?>
