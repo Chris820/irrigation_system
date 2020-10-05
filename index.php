@@ -62,8 +62,7 @@ $status = getstatus(); ?>
 <h2 id="tab-tanks" class="tab"><a href="#" aria-label="Toggle tank details" aria-controls="tank-details"><span>Tank</span></a></h2>
 <div id="panel-tanks" class="panel">
   <?php // Work out the tank level as a percentage
-  // TODO: Adjust for empty value
-  $tank_empty = 2000;
+  $tank_empty = 1800;
   $tank_full = 273;
   $level = trim($status['tank']['level'][1]);
   $level = round((100 - (($level - $tank_full) * 100) / ($tank_empty - $tank_full)),1,PHP_ROUND_HALF_DOWN);
