@@ -23,7 +23,7 @@ function switching($channel,$state) {
 }
 //
 // Scheduling
-if(isset($_GET['garden-schedule-set'])) {  
+if(isset($_GET['garden-schedule-set'])) {
   schedule('garden',$_POST['on'] . '|' . $_POST['off']. '|' . $_POST['days']);
   echo 'Garden schedule saved';
 }
@@ -45,7 +45,7 @@ function schedule($channel, $data) {
 }
 //
 // Set the tank history period
-if(isset($_GET['tank-history-select'])) {
+if(isset($_GET['tank-history-update'])) {
   set_period($_POST['period']);
   echo 'Tank history period updated';
 }
