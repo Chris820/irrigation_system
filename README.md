@@ -1,6 +1,6 @@
 # Raspberry Pi based automated garden irrigation system
 
-- Monitors water tank levels, and logs hourly
+- Monitors water tank levels (SKU: SEN0208), and logs hourly
 - 7 day programmable schedule, per channel
 - Current support for 4 channels, but extensible
 - Triggers the switching of 5v relays (SKU: CE05279) and thus 12v solenoids via the RPi.GPIO.
