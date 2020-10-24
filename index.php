@@ -76,7 +76,7 @@ $status = getstatus(); ?>
   $tank1_empty = 1800;
   $tank1_full = 273;
   $tank2_empty = 1600;
-  $tank2_full = 10;
+  $tank2_full = 42;
   // Work out the tank levels as a percentage
   $level = trim($status['tank']['level1'][1]);
   $level = round((100 - (($level - $tank1_full) * 100) / ($tank1_empty - $tank1_full)),1,PHP_ROUND_HALF_DOWN);
