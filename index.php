@@ -74,7 +74,7 @@ $status = getstatus(); ?>
 <div id="panel-tanks" class="panel">
   <?php // Define values for full and empty tanks
   $tank1_empty = 1800;
-  $tank1_full = 273;
+  $tank1_full = 275;
   $tank2_empty = 1600;
   $tank2_full = 42;
   // Work out the tank levels as a percentage
