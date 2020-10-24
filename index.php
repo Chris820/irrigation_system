@@ -27,9 +27,11 @@ function getstatus() {
   // Get the schedules
   $garden_schedule = file_get_contents('/var/www/html/data/schedules/garden');
   $lawn_schedule = file_get_contents('/var/www/html/data/schedules/lawn');
+  $status['garden']['schedule'] = array();
   if ($garden_schedule != '') {
     $status['garden']['schedule'] = explode('|',$garden_schedule);
   }
+  $status['lawn']['schedule'] = array();
   if ($lawn_schedule != '') {
     $status['lawn']['schedule'] = explode('|',$lawn_schedule);
   }
@@ -122,26 +124,26 @@ $status = getstatus(); ?>
   <button id="garden-on" class="primary on ajaxid<?php if($status['garden']['state'] === '0') echo ' active'; ?>">On</button>
   <div class="extended" id="garden-details">
     <div class="form-radios" role="radiogroup" aria-label="Shedule to run on the following days">
-      <input type="checkbox" id="garden-mon" name="garden-days" value="1"<?php if(strpos($status['garden']['schedule'][2],'1')) echo ' checked' ?>>
+      <input type="checkbox" id="garden-mon" name="garden-days" value="1"<?php if(isset($status['garden']['schedule'][2]) && strpos($status['garden']['schedule'][2],'1')) echo ' checked' ?>>
       <label for="garden-mon">Mon</label>
-      <input type="checkbox" id="garden-tue" name="garden-days" value="2"<?php if(strpos($status['garden']['schedule'][2],'2')) echo ' checked' ?>>
+      <input type="checkbox" id="garden-tue" name="garden-days" value="2"<?php if(isset($status['garden']['schedule'][2]) && strpos($status['garden']['schedule'][2],'2')) echo ' checked' ?>>
       <label for="garden-tue">Tues</label>
-      <input type="checkbox" id="garden-wed" name="garden-days" value="3"<?php if(strpos($status['garden']['schedule'][2],'3')) echo ' checked' ?>>
+      <input type="checkbox" id="garden-wed" name="garden-days" value="3"<?php if(isset($status['garden']['schedule'][2]) && strpos($status['garden']['schedule'][2],'3')) echo ' checked' ?>>
       <label for="garden-wed">Wed</label>
-      <input type="checkbox" id="garden-thu" name="garden-days" value="4"<?php if(strpos($status['garden']['schedule'][2],'4')) echo ' checked' ?>>
+      <input type="checkbox" id="garden-thu" name="garden-days" value="4"<?php if(isset($status['garden']['schedule'][2]) && strpos($status['garden']['schedule'][2],'4')) echo ' checked' ?>>
       <label for="garden-thu">Thurs</label>
-      <input type="checkbox" id="garden-fri" name="garden-days" value="5"<?php if(strpos($status['garden']['schedule'][2],'5')) echo ' checked' ?>>
+      <input type="checkbox" id="garden-fri" name="garden-days" value="5"<?php if(isset($status['garden']['schedule'][2]) && strpos($status['garden']['schedule'][2],'5')) echo ' checked' ?>>
       <label for="garden-fri">Fri</label>
-      <input type="checkbox" id="garden-sat" name="garden-days" value="6"<?php if(strpos($status['garden']['schedule'][2],'6')) echo ' checked' ?>>
+      <input type="checkbox" id="garden-sat" name="garden-days" value="6"<?php if(isset($status['garden']['schedule'][2]) && strpos($status['garden']['schedule'][2],'6')) echo ' checked' ?>>
       <label for="garden-sat">Sat</label>
-      <input type="checkbox" id="garden-sun" name="garden-days" value="7"<?php if(strpos($status['garden']['schedule'][2],'7')) echo ' checked' ?>>
+      <input type="checkbox" id="garden-sun" name="garden-days" value="7"<?php if(isset($status['garden']['schedule'][2]) && strpos($status['garden']['schedule'][2],'7')) echo ' checked' ?>>
       <label for="garden-sun">Sun</label>
     </div>
     <div class="form-times">
       <label for="garden-schedule-on">Turn on at</label>
-      <input type="time" id="garden-schedule-on" name="garden-schedule-on" <?php if(isset($status['garden']['schedule'])) echo 'value="'.$status['garden']['schedule'][0].'"'; ?>>
+      <input type="time" id="garden-schedule-on" name="garden-schedule-on" <?php if(isset($status['garden']['schedule'][0])) echo 'value="'.$status['garden']['schedule'][0].'"'; ?>>
       <label for="garden-schedule-off">Turn off at</label>
-      <input type="time" id="garden-schedule-off" name="garden-schedule-off" <?php if(isset($status['garden']['schedule'])) echo 'value="'.$status['garden']['schedule'][1].'"'; ?>>
+      <input type="time" id="garden-schedule-off" name="garden-schedule-off" <?php if(isset($status['garden']['schedule'][1])) echo 'value="'.$status['garden']['schedule'][1].'"'; ?>>
     </div>
     <button id="garden-schedule-clear" class="secondary cancel ajaxid" aria-label="Clear garden schedule">Clear</button>
     <button id="garden-schedule-set" class="secondary confirm" aria-label="Save garden schedule">Save</button>
@@ -154,26 +156,26 @@ $status = getstatus(); ?>
   <button id="lawn-on" class="primary on ajaxid<?php if($status['lawn']['state'] === '0') echo ' active'; ?>">On</button>
   <div class="extended"  id="lawn-details">
     <div class="form-radios" role="radiogroup" aria-label="Shedule to run on the following days">
-      <input type="checkbox" id="lawn-mon" name="lawn-days" value="1"<?php if(strpos($status['lawn']['schedule'][2],'1')) echo ' checked' ?>>
+      <input type="checkbox" id="lawn-mon" name="lawn-days" value="1"<?php if(isset($status['lawn']['schedule'][2]) && strpos($status['lawn']['schedule'][2],'1')) echo ' checked' ?>>
       <label for="lawn-mon">Mon</label>
-      <input type="checkbox" id="lawn-tue" name="lawn-days" value="2"<?php if(strpos($status['lawn']['schedule'][2],'2')) echo ' checked' ?>>
+      <input type="checkbox" id="lawn-tue" name="lawn-days" value="2"<?php if(isset($status['lawn']['schedule'][2]) && strpos($status['lawn']['schedule'][2],'2')) echo ' checked' ?>>
       <label for="lawn-tue">Tues</label>
-      <input type="checkbox" id="lawn-wed" name="lawn-days" value="3"<?php if(strpos($status['lawn']['schedule'][2],'3')) echo ' checked' ?>>
+      <input type="checkbox" id="lawn-wed" name="lawn-days" value="3"<?php if(isset($status['lawn']['schedule'][2]) && strpos($status['lawn']['schedule'][2],'3')) echo ' checked' ?>>
       <label for="lawn-wed">Wed</label>
-      <input type="checkbox" id="lawn-thu" name="lawn-days" value="4"<?php if(strpos($status['lawn']['schedule'][2],'4')) echo ' checked' ?>>
+      <input type="checkbox" id="lawn-thu" name="lawn-days" value="4"<?php if(isset($status['lawn']['schedule'][2]) && strpos($status['lawn']['schedule'][2],'4')) echo ' checked' ?>>
       <label for="lawn-thu">Thurs</label>
-      <input type="checkbox" id="lawn-fri" name="lawn-days" value="5"<?php if(strpos($status['lawn']['schedule'][2],'5')) echo ' checked' ?>>
+      <input type="checkbox" id="lawn-fri" name="lawn-days" value="5"<?php if(isset($status['lawn']['schedule'][2]) && strpos($status['lawn']['schedule'][2],'5')) echo ' checked' ?>>
       <label for="lawn-fri">Fri</label>
-      <input type="checkbox" id="lawn-sat" name="lawn-days" value="6"<?php if(strpos($status['lawn']['schedule'][2],'6')) echo ' checked' ?>>
+      <input type="checkbox" id="lawn-sat" name="lawn-days" value="6"<?php if(isset($status['lawn']['schedule'][2]) && strpos($status['lawn']['schedule'][2],'6')) echo ' checked' ?>>
       <label for="lawn-sat">Sat</label>
-      <input type="checkbox" id="lawn-sun" name="lawn-days" value="7"<?php if(strpos($status['lawn']['schedule'][2],'7')) echo ' checked' ?>>
+      <input type="checkbox" id="lawn-sun" name="lawn-days" value="7"<?php if(isset($status['lawn']['schedule'][2]) && strpos($status['lawn']['schedule'][2],'7')) echo ' checked' ?>>
       <label for="lawn-sun">Sun</label>
     </div>
     <div class="form-times">
       <label for="lawn-schedule-on">Turn on at</label>
-      <input type="time" id="lawn-schedule-on" name="lawn-schedule-on" <?php if(isset($status['lawn']['schedule'])) echo 'value="'.$status['lawn']['schedule'][0].'"'; ?>>
+      <input type="time" id="lawn-schedule-on" name="lawn-schedule-on" <?php if(isset($status['lawn']['schedule'][0])) echo 'value="'.$status['lawn']['schedule'][0].'"'; ?>>
       <label for="lawn-schedule-off">Turn off at</label>
-      <input type="time" id="lawn-schedule-off" name="lawn-schedule-off" <?php if(isset($status['lawn']['schedule'])) echo 'value="'.$status['lawn']['schedule'][1].'"'; ?>>
+      <input type="time" id="lawn-schedule-off" name="lawn-schedule-off" <?php if(isset($status['lawn']['schedule'][1])) echo 'value="'.$status['lawn']['schedule'][1].'"'; ?>>
     </div>
     <button id="lawn-schedule-clear" class="secondary cancel ajaxid" aria-label="Clear lawn schedule">Clear</button>
     <button id="lawn-schedule-set" class="secondary confirm" aria-label="Save lawn schedule">Save</button>
