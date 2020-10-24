@@ -59,7 +59,7 @@ if (date('gi') % 100 == 0) {
 # Helper: Find the mode of the measurements (to the centimetre)
 function find_mode($dataset) {
 	$count = array();
-  	foreach ($dataset as $value) {
+  foreach ($dataset as $value) {
 		$value = substr($value,0,2);
 		if (isset($count[$value])) $count[$value]++;
 		else $count[$value] = 1;
@@ -70,7 +70,7 @@ function find_mode($dataset) {
 		if ($v > $iter) {
 			$mode = $k;
 			$iter = $v;
-		};
-	};
+		}
+	}
 	return $mode;
 }
