@@ -56,7 +56,7 @@ function getstatus() {
     unset($status['tank']['history'][$key]);
   }
   // The second tank is monitored by a different computer on the network (an old Macmini in the back shed)
-  // A USB to FTDI interace takes measurements from a HC-SR04 (see fdti-measure.py)
+  // A USB to FTDI interace takes measurements from a HC-SR04 (see ftdi-measure.py)
   // Measurements are written to text files in a manner nearly identical to what's here in cron.php
   // Then at one minute past the hour, a cron job on the Macmini rsyncs these files into the /data folder
   $tank2_history = explode("\n",$tank2_history);
