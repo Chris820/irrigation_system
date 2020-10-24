@@ -35,85 +35,115 @@ function getstatus() {
   if ($lawn_schedule != '') {
     $status['lawn']['schedule'] = explode('|',$lawn_schedule);
   }
+  // Get the tank reporting period
+  $status['tank']['period'] = 'all';
+  $status['tank']['period'] = file_get_contents('/var/www/html/data/period');
   // Tank levels
   $tank_current = file_get_contents('/var/www/html/data/level');
+  $tank2_current = file_get_contents('/var/www/html/data/level2');
   $tank_history = file_get_contents('/var/www/html/data/levels');
-  $status['tank']['level'] = explode('|',$tank_current);
-  $status['tank']['history']['all'] = explode("\n",$tank_history);
-  array_pop($status['tank']['history']['all']);
-  foreach($status['tank']['history']['all'] as $key => $row) {
+  $tank2_history = file_get_contents('/var/www/html/data/levels2');
+  // Current tank levels
+  $status['tank']['level1'] = explode('|',$tank_current);
+  $status['tank']['level2'] = explode('|',$tank2_current);
+  // Build the tank history array
+  $status['tank']['history']= explode("\n",$tank_history);
+  array_pop($status['tank']['history']);
+  // Key the history array by the hourly timestamp
+  foreach($status['tank']['history'] as $key => $row) {
     $row = explode('|',$row);
-    $status['tank']['history']['all'][$row[0]] = $row[1];
-    unset($status['tank']['history']['all'][$key]);
+    $status['tank']['history'][$row[0]] = array($row[1]);
+    unset($status['tank']['history'][$key]);
   }
-  // Slice up the tank levels for time periods
-  $status['tank']['history']['day'] = array_slice($status['tank']['history']['all'],-24,NULL,TRUE);
-  $status['tank']['history']['week'] = array_slice($status['tank']['history']['all'],-168,NULL,TRUE);
-  $status['tank']['history']['month'] = array_slice($status['tank']['history']['all'],-744,NULL,TRUE);
-  $status['tank']['history']['quarter'] = array_slice($status['tank']['history']['all'],-2190,NULL,TRUE);
-  $status['tank']['history']['half'] = array_slice($status['tank']['history']['all'],-4380,NULL,TRUE);
-  $status['tank']['history']['year'] = array_slice($status['tank']['history']['all'],-8760,NULL,TRUE);
-  // Get the tank history reporting period
-  $status['tank']['history']['period'] = 'all';
-  $status['tank']['history']['period'] = file_get_contents('/var/www/html/data/period');
+  // The second tank is monitored by a different computer on the network (an old Macmini in the back shed)
+  // A USB to FTDI interace takes measurements from a HC-SR04 (see fdti-measure.py)
+  // Measurements are written to text files in a manner nearly identical to what's here in cron.php
+  // Then at one minute past the hour, a cron job on the Macmini rsyncs these files into the /data folder
+  $tank2_history = explode("\n",$tank2_history);
+  foreach ($tank2_history as $key => $row) {
+    // Add the second tank value to the history array where the hourly timestamps match
+    $row = explode('|',$row);
+    $status['tank']['history'][$row[0]][] = $row[1];
+  }
   // Return
   return $status;
 }
 $status = getstatus(); ?>
 
-<h2 id="tab-tanks" class="tab"><a href="#" aria-label="Toggle tank details" aria-controls="tank-details"><span>Tank</span></a></h2>
+<h2 id="tab-tanks" class="tab"><a href="#" aria-label="Toggle tank details" aria-controls="tank-details"><span>Tanks</span></a></h2>
 <div id="panel-tanks" class="panel">
-  <?php // Work out the tank level as a percentage
-  $tank_empty = 1800;
-  $tank_full = 273;
-  $level = trim($status['tank']['level'][1]);
-  $level = round((100 - (($level - $tank_full) * 100) / ($tank_empty - $tank_full)),1,PHP_ROUND_HALF_DOWN);
+  <?php // Define values for full and empty tanks
+  $tank1_empty = 1800;
+  $tank1_full = 273;
+  $tank2_empty = 1600;
+  $tank2_full = 10;
+  // Work out the tank levels as a percentage
+  $level = trim($status['tank']['level1'][1]);
+  $level = round((100 - (($level - $tank1_full) * 100) / ($tank1_empty - $tank1_full)),1,PHP_ROUND_HALF_DOWN);
   if($level > 100) $level = 100;
-  $label_date = date('g:ia, j F Y',$status['tank']['level'][0]); ?>
-  <div class="tank-visual">
+  $level2 = trim($status['tank']['level2'][1]);
+  $level2 = round((100 - (($level2 - $tank2_full) * 100) / ($tank2_empty - $tank2_full)),1,PHP_ROUND_HALF_DOWN);
+  if($level2 > 100) $level2 = 100;
+  ?>
+  <div id="tank1" class="tank-visual">
     <div class="tank-visual-inner" style="height:<?php echo $level;?>%"></div>
     <p style="bottom:<?php echo $level;?>%;"><?php echo $level;?>%</p>
+  </div>
+  <div id="tank2" class="tank-visual">
+    <div class="tank-visual-inner" style="height:<?php echo $level2;?>%"></div>
+    <p style="bottom:<?php echo $level2;?>%;"><?php echo $level2;?>%</p>
   </div>
   <div class="extended" id="tank-details">
     <table class="tank-visual-history"
       data-graph-container-before="1"
       data-graph-type="area"
       data-graph-line-shadow="0"
-      data-graph-line-width="1"
+      data-graph-line-width="2"
       data-graph-height="220"
       data-graph-xaxis-labels-font-size=".6em"
       data-graph-xaxis-labels-enabled="0"
       data-graph-xaxis-rotation="290"
-      data-graph-legend-disabled="1"
       style="display:none;">
       <thead>
       <tr>
         <th scope="col">Date</th>
-        <th scope="col">Level</th>
+        <th scope="col">Tank 1</th>
+        <th scope="col">Tank 2</th>
       </tr>
       </thead>
       <tbody>
       <?php
-      $period = $status['tank']['history']['period'];
-      $history = $status['tank']['history'][$period];
-      foreach($history as $date => $level) {
+      $period = $status['tank']['period'];
+      // Get a slice of the history
+      if ($period != 'all') $history = array_slice($status['tank']['history'],-$period,NULL,TRUE);
+      // Print out the table cells
+      foreach($history as $date => $levels) {
         echo '<tr>';
-        echo '<td>'.date('ga, Y-m-d', $date).'</td>';
-        $level = round((100 - (($level - $tank_full) * 100) / ($tank_empty - $tank_full)),1,PHP_ROUND_HALF_DOWN);
-        if($level > 100) $level = 100;
-        echo '<td>'.$level.'%</td>';
+        echo '<td>'.$date.'</td>';
+        if (!array_key_exists(1,$levels)) $levels[1] = $tank2_empty; // For when before the second tank was connected
+        foreach ($levels as $key => $level) {
+          if ($key == 0) { // Use Tank 1 full and empty values
+            $level = round((100 - (($level - $tank1_full) * 100) / ($tank1_empty - $tank1_full)),1,PHP_ROUND_HALF_DOWN);
+          }
+          if ($key == 1) { // Use Tank 2 full and empty values
+            $level = round((100 - (($level - $tank2_full) * 100) / ($tank2_empty - $tank2_full)),1,PHP_ROUND_HALF_DOWN);
+          }
+          if($level > 100) $level = 100;
+          echo '<td>'.$level.'%</td>';
+        }
         echo '</tr>';
       } ?>
       </tbody>
     </table>
     <select id="tank-history-select">
-      <option <?php if($period == 'day') echo 'selected'; ?> value="day">Day</option>
-      <option <?php if($period == 'week') echo 'selected'; ?> value="week">Week</option>
-      <option <?php if($period == 'month') echo 'selected'; ?> value="month">Month</option>
-      <option <?php if($period == 'quarter') echo 'selected'; ?> value="quarter">Quarter</option>
-      <option <?php if($period == 'half') echo 'selected'; ?> value="half">Half year</option>
-      <option <?php if($period == 'year') echo 'selected'; ?> value="year">Year</option>
-      <option <?php if($period == 'all') echo 'selected'; ?> value="all">All time</option>
+      <option <?php if($period == '24') echo 'selected'; ?> value="24">Day</option>
+      <option <?php if($period == '72') echo 'selected'; ?> value="72">3 day</option>
+      <option <?php if($period == '168') echo 'selected'; ?> value="168">Week</option>
+      <option <?php if($period == '744') echo 'selected'; ?> value="744">Month</option>
+      <option <?php if($period == '2190') echo 'selected'; ?> value="2190">Quarter</option>
+      <option <?php if($period == '4380') echo 'selected'; ?> value="4380">Half year</option>
+      <option <?php if($period == '8760') echo 'selected'; ?> value="8760">Year</option>
+      <option <?php if($period == '0') echo 'selected'; ?> value="0">All time</option>
     </select>
   </div>
 </div>
@@ -123,7 +153,7 @@ $status = getstatus(); ?>
   <button id="garden-off" class="primary off ajaxid<?php if($status['garden']['state'] === '1') echo ' active'; ?>">Off</button>
   <button id="garden-on" class="primary on ajaxid<?php if($status['garden']['state'] === '0') echo ' active'; ?>">On</button>
   <div class="extended" id="garden-details">
-    <div class="form-radios" role="radiogroup" aria-label="Shedule to run on the following days">
+    <div class="form-radios">
       <input type="checkbox" id="garden-mon" name="garden-days" value="1"<?php if(isset($status['garden']['schedule'][2]) && strpos($status['garden']['schedule'][2],'1')) echo ' checked' ?>>
       <label for="garden-mon">Mon</label>
       <input type="checkbox" id="garden-tue" name="garden-days" value="2"<?php if(isset($status['garden']['schedule'][2]) && strpos($status['garden']['schedule'][2],'2')) echo ' checked' ?>>
@@ -155,7 +185,7 @@ $status = getstatus(); ?>
   <button id="lawn-off" class="primary off ajaxid<?php if($status['lawn']['state'] === '1') echo ' active'; ?>">Off</button>
   <button id="lawn-on" class="primary on ajaxid<?php if($status['lawn']['state'] === '0') echo ' active'; ?>">On</button>
   <div class="extended"  id="lawn-details">
-    <div class="form-radios" role="radiogroup" aria-label="Shedule to run on the following days">
+    <div class="form-radios">
       <input type="checkbox" id="lawn-mon" name="lawn-days" value="1"<?php if(isset($status['lawn']['schedule'][2]) && strpos($status['lawn']['schedule'][2],'1')) echo ' checked' ?>>
       <label for="lawn-mon">Mon</label>
       <input type="checkbox" id="lawn-tue" name="lawn-days" value="2"<?php if(isset($status['lawn']['schedule'][2]) && strpos($status['lawn']['schedule'][2],'2')) echo ' checked' ?>>

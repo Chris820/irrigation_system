@@ -39,7 +39,8 @@ if (date('gi') % 100 == 0) {
 	$measurements = array();
 	$i = 0;
 	while ($i < 24) {
-		$measurements[$i] = shell_exec('python /var/www/html/measure.py');
+		$measurement = shell_exec('python /var/www/html/measure.py');
+		if ($measurement) $measurements[$i] = $measurement;
 		$i++;
 	}
 	// Find the mode then filter the measurements to it, this helps remove outliers
@@ -51,7 +52,8 @@ if (date('gi') % 100 == 0) {
 	// Average the remainders
 	$average_measurement = array_sum($trimmed_measurements) / count($trimmed_measurements);
 	// Write to file
-	$level =  time() .'|'. $average_measurement;
+	$timestamp = date('ga, Y-m-d');
+	$level =  $timestamp .'|'. $average_measurement;
 	file_put_contents('/var/www/html/data/levels',$level . "\n", FILE_APPEND);
 	file_put_contents('/var/www/html/data/level',$level);
 }
