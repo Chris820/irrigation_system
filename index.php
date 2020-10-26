@@ -60,6 +60,7 @@ function getstatus() {
   // Measurements are written to text files in a manner nearly identical to what's here in cron.php
   // Then at one minute past the hour, a cron job on the Macmini rsyncs these files into the /data folder
   $tank2_history = explode("\n",$tank2_history);
+  array_pop($tank2_history);
   foreach ($tank2_history as $key => $row) {
     // Add the second tank value to the history array where the hourly timestamps match
     $row = explode('|',$row);
@@ -76,7 +77,7 @@ $status = getstatus(); ?>
   $tank1_empty = 1800;
   $tank1_full = 275;
   $tank2_empty = 1600;
-  $tank2_full = 42;
+  $tank2_full = 45;
   // Work out the tank levels as a percentage
   $level = trim($status['tank']['level1'][1]);
   $level = round((100 - (($level - $tank1_full) * 100) / ($tank1_empty - $tank1_full)),1,PHP_ROUND_HALF_DOWN);
@@ -96,10 +97,10 @@ $status = getstatus(); ?>
   <div class="extended" id="tank-details">
     <table class="tank-visual-history"
       data-graph-container-before="1"
-      data-graph-type="area"
+      data-graph-type="line"
       data-graph-line-shadow="0"
-      data-graph-line-width="2"
-      data-graph-height="220"
+      data-graph-line-width="1"
+      data-graph-height="256"
       data-graph-xaxis-labels-font-size=".6em"
       data-graph-xaxis-labels-enabled="0"
       data-graph-xaxis-rotation="290"
