@@ -147,7 +147,7 @@ jQuery(function($) {
   // On document.ready, render the tank history as a chart
   $(document).ready(function() {
     $('table.tank-visual-history')
-    .bind('highchartTable.beforeRender', function(e, highChartConfig) {highChartConfig.yAxis[0].max = 100;})
+    .bind('highchartTable.beforeRender', function(e, highChartConfig) {highChartConfig.yAxis[0].max = 100;highChartConfig.yAxis[0].min = 0;})
     .highchartTable();
   });
 });
