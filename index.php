@@ -52,7 +52,7 @@ function getstatus() {
   // Key the history array by the hourly timestamp
   foreach($status['tank']['history'] as $key => $row) {
     $row = explode('|',$row);
-    $status['tank']['history'][$row[0]] = array($row[1]);
+    $status['tank']['history'][$row[0]]['tank1'] = $row[1];
     unset($status['tank']['history'][$key]);
   }
   // The second tank is monitored by a different computer on the network (an old Macmini in the back shed)
@@ -62,9 +62,18 @@ function getstatus() {
   $tank2_history = explode("\n",$tank2_history);
   array_pop($tank2_history);
   foreach ($tank2_history as $key => $row) {
-    // Add the second tank value to the history array where the hourly timestamps match
+    // Add the second tank value to the history array
     $row = explode('|',$row);
-    $status['tank']['history'][$row[0]][] = $row[1];
+    $status['tank']['history'][$row[0]]['tank2'] = $row[1];
+  }
+  // Key sort to ensure the history array is in chronological order
+  ksort($status['tank']['history']);
+  // Change these unix timestamps into a more human readable format:'ga Y-m-d'.
+  foreach($status['tank']['history'] as $key => $row) {
+    $newkey = date('ga, Y-m-d',$key);
+    if(!array_key_exists($newkey,$status['tank']['history'])) $status['tank']['history'][$newkey] = $row;
+    else $status['tank']['history'][$newkey] += $row;
+    unset($status['tank']['history'][$key]);
   }
   // Return
   return $status;
@@ -119,19 +128,22 @@ $status = getstatus(); ?>
       if ($period != 'all') $history = array_slice($status['tank']['history'],-$period,NULL,TRUE);
       // Print out the table cells
       foreach($history as $date => $levels) {
+        $level1 = '';
+        $level2 = '';
         echo '<tr>';
         echo '<td>'.$date.'</td>';
-        if (!array_key_exists(1,$levels)) $levels[1] = $tank2_empty; // For when before the second tank was connected
         foreach ($levels as $key => $level) {
-          if ($key == 0) { // Use Tank 1 full and empty values
+          if ($key == 'tank1') { // Use Tank 1 full and empty values
             $level = round((100 - (($level - $tank1_full) * 100) / ($tank1_empty - $tank1_full)),1,PHP_ROUND_HALF_DOWN);
+            $level1 = ($level > 100) ? '100%' : $level.'%';
           }
-          if ($key == 1) { // Use Tank 2 full and empty values
+          if ($key == 'tank2') { // Use Tank 2 full and empty values
             $level = round((100 - (($level - $tank2_full) * 100) / ($tank2_empty - $tank2_full)),1,PHP_ROUND_HALF_DOWN);
+            $level2 = ($level > 100) ? '100%' : $level.'%';
           }
-          if($level > 100) $level = 100;
-          echo '<td>'.$level.'%</td>';
         }
+        echo '<td>'.$level1.'</td>';
+        echo '<td>'.$level2.'</td>';
         echo '</tr>';
       } ?>
       </tbody>
