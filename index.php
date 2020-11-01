@@ -36,7 +36,7 @@ function getstatus() {
     $status['lawn']['schedule'] = explode('|',$lawn_schedule);
   }
   // Get the tank reporting period
-  $status['tank']['period'] = 'all';
+  $status['tank']['period'] = '0';
   $status['tank']['period'] = file_get_contents('/var/www/html/data/period');
   // Tank levels
   $tank_current = file_get_contents('/var/www/html/data/level');
@@ -86,7 +86,7 @@ $status = getstatus(); ?>
   $tank1_empty = 1800;
   $tank1_full = 275;
   $tank2_empty = 1600;
-  $tank2_full = 45;
+  $tank2_full = 55;
   // Work out the tank levels as a percentage
   $level = trim($status['tank']['level1'][1]);
   $level = round((100 - (($level - $tank1_full) * 100) / ($tank1_empty - $tank1_full)),1,PHP_ROUND_HALF_DOWN);
@@ -125,9 +125,20 @@ $status = getstatus(); ?>
       <?php
       $period = $status['tank']['period'];
       // Get a slice of the history
-      if ($period != 'all') $history = array_slice($status['tank']['history'],-$period,NULL,TRUE);
+      $history = array_slice($status['tank']['history'],-$period,NULL,TRUE);
+      // The history array can get too big to render. So for certain periods remove all but every nth item.
+      if ($period == '744') $skip = 3;
+      if ($period == '2190') $skip = 6;
+      if ($period == '8760') $skip = 12;
+      if ($period == '0') $skip = 24;
+      if(isset($skip)) $keepers = range(0, count($history), $skip);
       // Print out the table cells
+      $i = -1;
       foreach($history as $date => $levels) {
+        $i++;
+        if(isset($keepers) && !in_array($i, $keepers, true)) {
+          continue; // Skip if not in the list of keepers
+        }
         $level1 = '';
         $level2 = '';
         echo '<tr>';
@@ -154,7 +165,6 @@ $status = getstatus(); ?>
       <option <?php if($period == '168') echo 'selected'; ?> value="168">Week</option>
       <option <?php if($period == '744') echo 'selected'; ?> value="744">Month</option>
       <option <?php if($period == '2190') echo 'selected'; ?> value="2190">Quarter</option>
-      <option <?php if($period == '4380') echo 'selected'; ?> value="4380">Half year</option>
       <option <?php if($period == '8760') echo 'selected'; ?> value="8760">Year</option>
       <option <?php if($period == '0') echo 'selected'; ?> value="0">All time</option>
     </select>
