@@ -200,6 +200,9 @@ $status = getstatus(); ?>
     </div>
     <button id="garden-schedule-clear" class="secondary cancel ajaxid" aria-label="Clear garden schedule">Clear</button>
     <button id="garden-schedule-set" class="secondary confirm" aria-label="Save garden schedule">Save</button>
+    <div id="garden-visual">
+      <img src="//192.168.1.101:8081/3" alt="Video feed of garden beds" />
+    </div>
   </div>
 </div>
 
