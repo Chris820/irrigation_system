@@ -30,7 +30,7 @@ if start != 0 and stop != 0:
  # Multiply by the speed of sound (mm/second) then half to get the distance
  distance = ( elapsed * 343260 ) / 2
  # Print the output
- print distance
+ print(distance)
 
 # Clean up and close
 gpio.write(0x00)

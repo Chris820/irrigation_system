@@ -28,7 +28,7 @@ elapsed = stop-start
 # Multiply by the speed of sound (mm/second) then half to get the distance
 distance = ( elapsed * 343260 ) / 2
 # Print the output
-print distance
+print(distance)
 
 # Cleanup the GPIO
 GPIO.cleanup()
