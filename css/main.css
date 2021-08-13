@@ -1,4 +1,4 @@
-/*- Chris Lamb: Spetember 2020 -*/
+/*- Chris Lamb: September 2020 -*/
 * {
 	margin: 0;
 	padding: 0;
@@ -208,14 +208,6 @@ button.secondary.cancel {
 button.secondary + button.secondary {
 	margin-left: .5rem;
 }
-/* RTSP video feeds */
-#garden-visual {
-	margin-top: 2rem;
-	max-width: 100%;
-}
-#garden-visual img {
-	width: 100%;
-}
 /* Footer */
 #footer {
 	background-color: #ddddd9;
@@ -231,13 +223,12 @@ button.secondary + button.secondary {
 	border: none;
 	float: right;
 	height: 2rem;
-	transition: all 1s;
 	text-indent: -9999rem;
 	transition: all 1s;
 	width: 2rem;
 }
 #footer button#settings.active {
-	 transform: rotate(90deg);
+	transform: rotate(90deg);
 }
 #footer .extended {
 	clear: right;

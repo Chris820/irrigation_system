@@ -85,8 +85,8 @@ $status = getstatus(); ?>
   <?php // Define values for full and empty tanks
   $tank1_empty = 1800;
   $tank1_full = 275;
-  $tank2_empty = 1600;
-  $tank2_full = 55;
+  $tank2_empty = 1800;
+  $tank2_full = 350;
   // Work out the tank levels as a percentage
   $level = trim($status['tank']['level1'][1]);
   $level = round((100 - (($level - $tank1_full) * 100) / ($tank1_empty - $tank1_full)),1,PHP_ROUND_HALF_DOWN);
@@ -200,9 +200,6 @@ $status = getstatus(); ?>
     </div>
     <button id="garden-schedule-clear" class="secondary cancel ajaxid" aria-label="Clear garden schedule">Clear</button>
     <button id="garden-schedule-set" class="secondary confirm" aria-label="Save garden schedule">Save</button>
-    <div id="garden-visual">
-      <img src="//192.168.1.101:8081/3" alt="Video feed of garden beds" />
-    </div>
   </div>
 </div>
 
