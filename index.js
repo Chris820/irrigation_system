@@ -37,10 +37,10 @@ io.sockets.on('connection', function(socket) {
   socket.on('cleanUp', function(data) {
     console.log('Cleaning up');
     gpio.write(GardenTrigger, 0);
-    gpio.write(LawnTrigger, 0);    
+    gpio.write(LawnTrigger, 0);
     // TODO clear all schedules
   });
-  // TODO Save and clear schedules 
+  // TODO Save and clear schedules
 });
 
 
@@ -48,8 +48,7 @@ io.sockets.on('connection', function(socket) {
 
 
 // Cron job to log current tank levels
-// TODO: Change to just before the hour
-nodeCron.schedule("* * * * *", getCurrentTankLevel);
+nodeCron.schedule("*/59 * * * *", getCurrentTankLevel);
 async function getCurrentTankLevel() {
   console.log('Checking tank levels');
   // Set up vars
@@ -69,8 +68,8 @@ async function getCurrentTankLevel() {
     fs.writeFile('./data/tank1Level.json', JSON.stringify([timestamp, percentage1]), err => {if (err) throw err;});
     // Append to the raw history text file
     fs.appendFile('./data/tank1RawHistory.txt', timestamp+'|'+rawLevel1+"\n", function (err) {if (err) throw err;});
-  }); 
-  
+  });
+
   // TODO
   // This is a placeholders for the second tank Python script
   var rawLevel2 = 350;
@@ -84,8 +83,7 @@ async function getCurrentTankLevel() {
 }
 
 // Cron job to (re)build history of tank levels
-// TODO: Change to hourly
-nodeCron.schedule("* * * * *", updateHistory);
+nodeCron.schedule("*/0 * * * *", updateHistory);
 async function updateHistory() {
   console.log('Rebuilding the history');
   // Tank 1: Read the Raw history file
@@ -162,16 +160,13 @@ app.get('/api/tank2History', (req, res) => {
 });
 
 // API endpoints for actual GPIO states
-app.get('/api/isGardenActive', (req, res) => {   
-  gpio.read(GardenTrigger, (err, value) => {    
+app.get('/api/isGardenActive', (req, res) => {
+  gpio.read(GardenTrigger, (err, value) => {
     res.send(value);
   });
 });
-app.get('/api/isLawnActive', (req, res) => {   
-  gpio.read(LawnTrigger, (err, value) => {    
+app.get('/api/isLawnActive', (req, res) => {
+  gpio.read(LawnTrigger, (err, value) => {
     res.send(value);
   });
 });
-
-
-
