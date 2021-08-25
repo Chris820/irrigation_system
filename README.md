@@ -4,10 +4,9 @@ August 2021: Entirely rewritten for a node.js server with a React front-end.
 Although I'm still using Python to take the water tank level measurements
 
 ## TODO
-- Finish the scheduling stuff in React
 - Write another nodeCron to check for and run any saved schedules
-- Get actual real data from the second tank
-- Code clean up
+- Consider a timer function using a range input
+- Finish displaying the feedback in the UI instead of console log
 
 ## Features
 - Monitors water tank levels (SKU: SEN0208), and logs hourly

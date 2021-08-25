@@ -145,7 +145,6 @@ button.trigger.off.latched {
 	background-color: #c96567;
 }
 /* Scheduling options */
-/* TODO: Clean up */
 label {
 	display: inline-block;
 }
@@ -186,7 +185,6 @@ input[type="time"] {
 	font: 1em 'Roboto', sans-serif;
 	width: calc((100% / 3) * 2);
 }
-/* TODO: End clean up */
 /* Schedule confirm/cancel buttons */
 button.schedule {
 	background-color: transparent;

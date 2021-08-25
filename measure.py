@@ -49,8 +49,13 @@ for measure in measurements:
   if round(measure) == mode:
     filtered.append(measure)
     
-# Finally, find the average in millimeters
+# Find the average in millimeters
 result = (sum(filtered) / len(filtered)) * 10
+
+# Write the result to text file
+f = open('data/tank1Raw.txt', 'w')
+f.write(str(result))
+f.close()
 
 # Print the result
 print (result)

@@ -25,32 +25,44 @@ gpiop.setup(LawnTrigger, gpio.DIR_OUT);
 
 // Do the switching
 io.sockets.on('connection', function(socket) {
-  console.log('App connection made');
+  uiFeedback('Connected to server');
   socket.on('garden', function(data) {
-    console.log('garden '+data);
+    uiFeedback('Garden: '+data);
     gpio.write(GardenTrigger, data);
   });
   socket.on('lawn', function(data) {
-    console.log('lawn '+data);
+    uiFeedback('Lawn: '+data);
     gpio.write(LawnTrigger, data);
   });
   socket.on('cleanUp', function(data) {
-    console.log('Cleaning up');
+    uiFeedback('Cleaning up');
     gpio.write(GardenTrigger, 0);
     gpio.write(LawnTrigger, 0);
-    // TODO clear all schedules
   });
-  // TODO Save and clear schedules
+  socket.on('update_garden_schedule', function(data) {
+    uiFeedback('Updated garden schedule');
+    fs.writeFile('./data/gardenSchedule.json', JSON.stringify(data), err => {if (err) throw err;});
+  });
+  socket.on('update_lawn_schedule', function(data) {
+    uiFeedback('Updated lawn schedule');
+    fs.writeFile('./data/lawnSchedule.json', JSON.stringify(data), err => {if (err) throw err;});
+  });
 });
 
 
+// Cron job to check for and run any saved schedules
+nodeCron.schedule("* * * * *", checkForSchedules);
+async function checkForSchedules() {
+
 // TODO: Write a Cron to run on the minute to check for schedules
 
+}
 
-// Cron job to log current tank levels
-nodeCron.schedule("*/59 * * * *", getCurrentTankLevel);
+
+// Cron job to get current tank levels
+nodeCron.schedule("0 * * * *", getCurrentTankLevel);
 async function getCurrentTankLevel() {
-  console.log('Checking tank levels');
+  uiFeedback('Checking tank levels');
   // Set up vars
   var timestamp = Date.now();
   var tank1_full = 270;
@@ -69,23 +81,27 @@ async function getCurrentTankLevel() {
     // Append to the raw history text file
     fs.appendFile('./data/tank1RawHistory.txt', timestamp+'|'+rawLevel1+"\n", function (err) {if (err) throw err;});
   });
-
-  // TODO
-  // This is a placeholders for the second tank Python script
-  var rawLevel2 = 350;
-  // Calculate the levels as a percentage
-  var percentage2 = Number(Math.abs(100 - ((rawLevel2 - tank2_full) * 100) / (tank2_empty - tank2_full)).toFixed(1));
-  if (percentage2 > 100) percentage2 = 100;
-  // Write to the json files
-  fs.writeFile('./data/tank2Level.json', JSON.stringify([timestamp, percentage2]), err => {if (err) throw err;});
-  // Append to the raw history text file
-  fs.appendFile('./data/tank2RawHistory.txt', timestamp+'|'+rawLevel2+"\n", function (err) {if (err) throw err;});
+  
+  // Levels of the second tank are monitored by a different computer on the network
+  // Measurements are written to a text file in a manner nearly identical to what's here in measure.py
+  // Then at one minute before the hour, a cron job rsyncs this file into the /data folder
+  fs.readFile('./data/tank2Raw.txt', 'utf8' , (err, data) => {
+    if (err) {throw err;}
+    var rawLevel2 = Number(data);
+    // Calculate the levels as a percentage
+    var percentage2 = Number(Math.abs(100 - ((rawLevel2 - tank2_full) * 100) / (tank2_empty - tank2_full)).toFixed(1));
+    if (percentage2 > 100) percentage2 = 100;
+    // Write to the json files
+    fs.writeFile('./data/tank2Level.json', JSON.stringify([timestamp, percentage2]), err => {if (err) throw err;});
+    // Append to the raw history text file
+    fs.appendFile('./data/tank2RawHistory.txt', timestamp+'|'+rawLevel2+"\n", function (err) {if (err) throw err;});
+  });
 }
 
 // Cron job to (re)build history of tank levels
-nodeCron.schedule("*/0 * * * *", updateHistory);
+nodeCron.schedule("1 * * * *", updateHistory);
 async function updateHistory() {
-  console.log('Rebuilding the history');
+  uiFeedback('Rebuilding the history');
   // Tank 1: Read the Raw history file
   fs.readFile('./data/tank1RawHistory.txt', 'utf8' , (err, data) => {
     if (err) {throw err;}
@@ -133,7 +149,7 @@ async function updateHistory() {
 }
 
 
-// API endpoints for tank level data, taken from above json files
+// API endpoints for tank level data and schedules, taken from above json files
 app.get('/api/tank1Level', (req, res) => {
   fs.readFile('./data/tank1Level.json', (err, data) => {
     let parsedData = JSON.parse(data);
@@ -158,8 +174,20 @@ app.get('/api/tank2History', (req, res) => {
     res.send(parsedData);
   });
 });
+app.get('/api/gardenSchedule', (req, res) => {
+  fs.readFile('./data/gardenSchedule.json', (err, data) => {
+    let parsedData = JSON.parse(data);
+    res.send(parsedData);
+  });
+});
+app.get('/api/lawnSchedule', (req, res) => {
+  fs.readFile('./data/lawnSchedule.json', (err, data) => {
+    let parsedData = JSON.parse(data);
+    res.send(parsedData);
+  });
+});
 
-// API endpoints for actual GPIO states
+// API endpoints for source-of-truth GPIO states
 app.get('/api/isGardenActive', (req, res) => {
   gpio.read(GardenTrigger, (err, value) => {
     res.send(value);
@@ -170,3 +198,17 @@ app.get('/api/isLawnActive', (req, res) => {
     res.send(value);
   });
 });
+
+
+// Feedback
+async function uiFeedback(message) {
+  fs.appendFile('./data/feedback.txt', message+"\n", function (err) {if (err) throw err;});
+}
+app.get('/api/feedback', (req, res) => {
+  fs.readFile('./data/feedback.txt', (err, data) => {
+    let parsedData = JSON.parse(data);
+    res.send(parsedData);
+  });
+});
+
+
