@@ -4,31 +4,56 @@
 import time
 import RPi.GPIO as GPIO
 
-# Use BCM pin numbers instead of physical pin numbers
-GPIO.setmode(GPIO.BCM)
+# Use physical pin numbers instead of BCM pin numbers
+GPIO.setmode(GPIO.BOARD)
 # Set pins to use for trigger(output) and echo(input)
-GPIO.setup(23,GPIO.OUT) # trigger
-GPIO.setup(24,GPIO.IN) # echo
+GPIO.setup(16,GPIO.OUT) # trigger
+GPIO.setup(18,GPIO.IN) # echo
 
-# Set trigger to False, then..
-GPIO.output(23, False)
-time.sleep(.1)
-# Send 10us pulse to trigger
-GPIO.output(23, True)
-time.sleep(.00001)
-GPIO.output(23, False)
+# Take a bunch of measurements
+measurements = []
+i = 0
+while i < 10:
+  i +=1 
+  # Set trigger to False, then..
+  GPIO.output(16, False)
+  time.sleep(.1)
+  # Send 10us pulse to trigger
+  GPIO.output(16, True)
+  time.sleep(.00001)
+  GPIO.output(16, False)
 
-# Record times for leading and trailing edge of echo
-while GPIO.input(24)==0:
-  start = time.time()
-while GPIO.input(24)==1:
-  stop = time.time()
-# Calculate echo length
-elapsed = stop-start
-# Multiply by the speed of sound (mm/second) then half to get the distance
-distance = ( elapsed * 343260 ) / 2
-# Print the output
-print(distance)
+  # Record times for leading and trailing edge of echo
+  while GPIO.input(18)==0:
+    start = time.time()
+  while GPIO.input(18)==1:
+    stop = time.time()
+  # Calculate echo length
+  elapsed = stop-start
+  # Multiply by the speed of sound (cm/second) then half to get the distance
+  distance = ( elapsed * 34326 ) / 2
+  # Add it to the list
+  measurements.append(distance)
+  # Wait a bit so as not to thrash the sensor
+  time.sleep(.125)
+
+# Find the mode to the nearest whole centimetre
+rounded = []
+for measure in measurements:
+  rounded.append(round(measure))
+mode = max(rounded, key = rounded.count)
+
+# Filter the measures to only include results that cluster around the mode
+filtered = []
+for measure in measurements:
+  if round(measure) == mode:
+    filtered.append(measure)
+    
+# Finally, find the average in millimeters
+result = (sum(filtered) / len(filtered)) * 10
+
+# Print the result
+print (result)
 
 # Cleanup the GPIO
 GPIO.cleanup()
