@@ -7,12 +7,24 @@ class Footer extends Component {
     // Define state values
     this.state = {
       expanded: false,
+      feedback: ''
     }
   }
   
   // Mount the component
   componentDidMount() {
     this.socket = io();
+    this.fetchData();
+    this.timer = setInterval(() => this.fetchData(), 250);
+  }
+  
+  // Fetch the latest bit of feedback from server API
+  fetchData() {
+    fetch('/api/feedback')
+      .then(response => response.json())
+      .then(result => {
+        this.setState({feedback: result});
+    })
   }
   
   // Show and hide the expanded panel
@@ -32,8 +44,9 @@ class Footer extends Component {
         <button aria-label="Toggle settings" aria-controls="settings-details" className={this.state.expanded ? 'settings animated': 'settings'} aria-expanded={this.state.expanded} onClick={this.toggleExpanded}>Settings</button>
         <div className="expanded" id="settings-details" style={{display: this.state.expanded ? 'block': 'none'}}>     
           <button onClick={this.goCleanUp}>Clean up</button>
+        </div>
+        <div id="messages"><p>{this.state.feedback}</p></div>
       </div>
-    </div>
     );
   }
 }

@@ -15,7 +15,7 @@ class Gardens extends Component {
         {id: 'garden4', value: 4, label:'Thurs', isChecked: false},
         {id: 'garden5', value: 5, label:'Fri', isChecked: false},
         {id: 'garden6', value: 6, label:'Sat', isChecked: false},
-        {id: 'garden7', value: 7, label:'Sun', isChecked: false}
+        {id: 'garden0', value: 0, label:'Sun', isChecked: false}
       ],
       start: '',
       end: '',
@@ -118,7 +118,7 @@ class Gardens extends Component {
         {id: 'garden4', value: 4, label:'Thurs', isChecked: false},
         {id: 'garden5', value: 5, label:'Fri', isChecked: false},
         {id: 'garden6', value: 6, label:'Sat', isChecked: false},
-        {id: 'garden7', value: 7, label:'Sun', isChecked: false}
+        {id: 'garden0', value: 0, label:'Sun', isChecked: false}
       ],
       start: '',
       end: '',

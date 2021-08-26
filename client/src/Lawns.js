@@ -15,7 +15,7 @@ class Lawns extends Component {
         {id: 'lawn4', value: 4, label:'Thurs', isChecked: false},
         {id: 'lawn5', value: 5, label:'Fri', isChecked: false},
         {id: 'lawn6', value: 6, label:'Sat', isChecked: false},
-        {id: 'lawn7', value: 7, label:'Sun', isChecked: false}
+        {id: 'lawn0', value: 0, label:'Sun', isChecked: false}
       ],
       start: '',
       end: '',
@@ -118,7 +118,7 @@ class Lawns extends Component {
         {id: 'lawn4', value: 4, label:'Thurs', isChecked: false},
         {id: 'lawn5', value: 5, label:'Fri', isChecked: false},
         {id: 'lawn6', value: 6, label:'Sat', isChecked: false},
-        {id: 'lawn7', value: 7, label:'Sun', isChecked: false}
+        {id: 'lawn0', value: 0, label:'Sun', isChecked: false}
       ],
       start: '',
       end: '',

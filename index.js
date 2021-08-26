@@ -9,35 +9,41 @@ const gpiop = gpio.promise;
 const {PythonShell} = require('python-shell');
 
 
-// Serve the build directory from :8080
+// Serve the build directory from :5000
 const webroot = __dirname + '/client/build';
 app.use(express.static(webroot));
-http.listen(8080);
+http.listen(5000);
 console.log("Server is listening");
 
 
 // Define connections to the Raspberry Pi GPIO
-const GardenTrigger = 11;
-const LawnTrigger = 13;
-gpiop.setup(GardenTrigger, gpio.DIR_OUT);
-gpiop.setup(LawnTrigger, gpio.DIR_OUT);
+// Note: 0/False is 'on' and True/1 is 'off', this is confusing I know, sorry.
+// Just so that the relay board should be normally closed.
+const GardenTrigger = 13;
+const LawnTrigger = 7;
+gpiop.setup(GardenTrigger, gpio.DIR_OUT).then(() => {return gpiop.write(GardenTrigger, true)});
+gpiop.setup(LawnTrigger, gpio.DIR_OUT).then(() => {return gpiop.write(LawnTrigger, true)});
 
 
 // Do the switching
 io.sockets.on('connection', function(socket) {
   uiFeedback('Connected to server');
   socket.on('garden', function(data) {
-    uiFeedback('Garden: '+data);
-    gpio.write(GardenTrigger, data);
+    var fb = 'off';
+    if (data === 1) fb = 'on'; 
+    uiFeedback('Garden '+ fb);
+    gpio.write(GardenTrigger, !data);
   });
   socket.on('lawn', function(data) {
-    uiFeedback('Lawn: '+data);
-    gpio.write(LawnTrigger, data);
+    var fb = 'off';
+    if (data === 1) fb = 'on'; 
+    uiFeedback('Lawn '+fb);
+    gpio.write(LawnTrigger, !data);
   });
   socket.on('cleanUp', function(data) {
     uiFeedback('Cleaning up');
-    gpio.write(GardenTrigger, 0);
-    gpio.write(LawnTrigger, 0);
+    gpio.write(GardenTrigger, 1);
+    gpio.write(LawnTrigger, 1);
   });
   socket.on('update_garden_schedule', function(data) {
     uiFeedback('Updated garden schedule');
@@ -51,16 +57,45 @@ io.sockets.on('connection', function(socket) {
 
 
 // Cron job to check for and run any saved schedules
-nodeCron.schedule("* * * * *", checkForSchedules);
+// Every minute
+nodeCron.schedule('* * * * *', checkForSchedules);
 async function checkForSchedules() {
-
-// TODO: Write a Cron to run on the minute to check for schedules
-
+  // What's the day and time?
+  const currentdate = new Date();
+  var nowday = currentdate.getDay();  
+  var nowtime = ('0' + currentdate.getHours()).slice(-2) + ':' + ('0' + currentdate.getMinutes()).slice(-2);
+  // Read the garden schedule
+  fs.readFile('./data/gardenSchedule.json', (err, data) => {
+    if (err) {throw err;}
+    let parsedData = JSON.parse(data);    
+    parsedData.days.forEach((day) => {
+      // Check if today isChecked
+      if (Number(day.value) === Number(nowday) && day.isChecked) {
+        // Do the switching if nowtime matches
+        if(parsedData.start === nowtime) gpio.write(GardenTrigger, 0);
+        if(parsedData.end === nowtime) gpio.write(GardenTrigger, 1);
+      }
+    })
+  });
+  // Read the lawn schedule
+  fs.readFile('./data/lawnSchedule.json', (err, data) => {
+    if (err) {throw err;}
+    let parsedData = JSON.parse(data);    
+    parsedData.days.forEach((day) => {
+      // Check if today isChecked
+      if (Number(day.value) === Number(nowday) && day.isChecked) {
+        // Do the switching if nowtime matches
+        if(parsedData.start === nowtime) gpio.write(LawnTrigger, 0);
+        if(parsedData.end === nowtime) gpio.write(LawnTrigger, 1);
+      }
+    })
+  });
 }
 
 
 // Cron job to get current tank levels
-nodeCron.schedule("0 * * * *", getCurrentTankLevel);
+// On the hour
+nodeCron.schedule('0 * * * *', getCurrentTankLevel);
 async function getCurrentTankLevel() {
   uiFeedback('Checking tank levels');
   // Set up vars
@@ -98,8 +133,9 @@ async function getCurrentTankLevel() {
   });
 }
 
-// Cron job to (re)build history of tank levels
-nodeCron.schedule("1 * * * *", updateHistory);
+// Cron job to (re)build history of tank levels. 
+// One minute past the hour.
+nodeCron.schedule('1 * * * *', updateHistory);
 async function updateHistory() {
   uiFeedback('Rebuilding the history');
   // Tank 1: Read the Raw history file
@@ -152,36 +188,42 @@ async function updateHistory() {
 // API endpoints for tank level data and schedules, taken from above json files
 app.get('/api/tank1Level', (req, res) => {
   fs.readFile('./data/tank1Level.json', (err, data) => {
+    if (err) {throw err;}
     let parsedData = JSON.parse(data);
     res.send(parsedData);
   });
 });
 app.get('/api/tank2Level', (req, res) => {
   fs.readFile('./data/tank2Level.json', (err, data) => {
+    if (err) {throw err;}
     let parsedData = JSON.parse(data);
     res.send(parsedData);
   });
 });
 app.get('/api/tank1History', (req, res) => {
   fs.readFile('./data/tank1History.json', (err, data) => {
+    if (err) {throw err;}
     let parsedData = JSON.parse(data);
     res.send(parsedData);
   });
 });
 app.get('/api/tank2History', (req, res) => {
   fs.readFile('./data/tank2History.json', (err, data) => {
+    if (err) {throw err;}
     let parsedData = JSON.parse(data);
     res.send(parsedData);
   });
 });
 app.get('/api/gardenSchedule', (req, res) => {
   fs.readFile('./data/gardenSchedule.json', (err, data) => {
+    if (err) {throw err;}
     let parsedData = JSON.parse(data);
     res.send(parsedData);
   });
 });
 app.get('/api/lawnSchedule', (req, res) => {
   fs.readFile('./data/lawnSchedule.json', (err, data) => {
+    if (err) {throw err;}
     let parsedData = JSON.parse(data);
     res.send(parsedData);
   });
@@ -190,12 +232,12 @@ app.get('/api/lawnSchedule', (req, res) => {
 // API endpoints for source-of-truth GPIO states
 app.get('/api/isGardenActive', (req, res) => {
   gpio.read(GardenTrigger, (err, value) => {
-    res.send(value);
+    res.send(!value);
   });
 });
 app.get('/api/isLawnActive', (req, res) => {
   gpio.read(LawnTrigger, (err, value) => {
-    res.send(value);
+    res.send(!value);
   });
 });
 
@@ -205,10 +247,10 @@ async function uiFeedback(message) {
   fs.appendFile('./data/feedback.txt', message+"\n", function (err) {if (err) throw err;});
 }
 app.get('/api/feedback', (req, res) => {
-  fs.readFile('./data/feedback.txt', (err, data) => {
-    let parsedData = JSON.parse(data);
+  fs.readFile('./data/feedback.txt', 'utf8' , (err, data) => {
+    if (err) {throw err;}
+    var feedback = data.split("\n")
+    let parsedData = JSON.parse(JSON.stringify(feedback.slice(-2)));
     res.send(parsedData);
   });
 });
-
-
