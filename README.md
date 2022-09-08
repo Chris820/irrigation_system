@@ -1,4 +1,4 @@
-# Raspberry Pi based automated garden irrigation system
+# Raspberry Pi based automated irrigation system
 
 August 2021: Entirely rewritten for a node.js server with a React front-end.
 Although I'm still using Python to take the water tank level measurements
@@ -11,10 +11,15 @@ Although I'm still using Python to take the water tank level measurements
 - Web-browser based UI, served over local network
 
 ## Installation
-1. Clone respository
-2. `npm install`
-3. Build the client: `cd client && npm run build`
-4. Start the server `node index.js`
+1. Ensure Node.js and npm are installed on your Raspberry Pi
+2. Clone respository
+3. `npm install`
+4. Build the client: `cd client && npm run build`
+
+## Operation
+To simply start the server: `node index.js`
+
+Or to ensure the server stays running even after a device reboot I would recommend using [pm2](https://pm2.keymetrics.io). Install pm2 globally, then follow instructions given at [Persistent applications](https://pm2.keymetrics.io/docs/usage/startup/).
 
 ## TODO
 - Consider a timer function using a range input
