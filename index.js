@@ -1,24 +1,22 @@
-const express = require('express');
-const app = express();
-const http = require('http').Server(app);
-const fs = require('fs');
-const nodeCron = require('node-cron');
-const io = require('socket.io')(http);
-const gpio = require('rpi-gpio');
-const gpiop = gpio.promise;
-const {PythonShell} = require('python-shell');
-
+const express = require('express')
+const app = express()
+const http = require('http').Server(app)
+const fs = require('fs')
+const nodeCron = require('node-cron')
+const io = require('socket.io')(http)
+const gpio = require('rpi-gpio')
+const gpiop = gpio.promise
 
 // Serve the build directory from :5000
-const webroot = __dirname + '/client/build';
-app.use(express.static(webroot));
-http.listen(5000);
-console.log("Server is listening");
+const webroot = __dirname + '/client/build'
+app.use(express.static(webroot))
+http.listen(5000)
+console.log('Server is listening')
 
 
-// Define connections to the Raspberry Pi GPIO
+// Define and make connections to the Raspberry Pi GPIO
 // Note: 0/False is 'on' and True/1 is 'off', this is confusing I know, sorry.
-// Just so that the relay board should be normally closed.
+// Just so that the relay board should be normally closed
 const GardenTrigger = 13;
 const LawnTrigger = 7;
 gpiop.setup(GardenTrigger, gpio.DIR_OUT).then(() => {return gpiop.write(GardenTrigger, true)});
@@ -62,12 +60,12 @@ nodeCron.schedule('* * * * *', checkForSchedules);
 async function checkForSchedules() {
   // What's the day and time?
   const currentdate = new Date();
-  var nowday = currentdate.getDay();  
-  var nowtime = ('0' + currentdate.getHours()).slice(-2) + ':' + ('0' + currentdate.getMinutes()).slice(-2);
+  const nowday = currentdate.getDay();  
+  const nowtime = ('0' + currentdate.getHours()).slice(-2) + ':' + ('0' + currentdate.getMinutes()).slice(-2);
   // Read the garden schedule
   fs.readFile('./data/gardenSchedule.json', (err, data) => {
     if (err) {throw err;}
-    let parsedData = JSON.parse(data);    
+    const parsedData = JSON.parse(data);    
     parsedData.days.forEach((day) => {
       // Check if today isChecked
       if (Number(day.value) === Number(nowday) && day.isChecked) {
@@ -80,7 +78,7 @@ async function checkForSchedules() {
   // Read the lawn schedule
   fs.readFile('./data/lawnSchedule.json', (err, data) => {
     if (err) {throw err;}
-    let parsedData = JSON.parse(data);    
+    const parsedData = JSON.parse(data);    
     parsedData.days.forEach((day) => {
       // Check if today isChecked
       if (Number(day.value) === Number(nowday) && day.isChecked) {
@@ -104,10 +102,12 @@ async function getCurrentTankLevel() {
   var tank1_empty = 1800;
   var tank2_full = 340;
   var tank2_empty = 1800;
+
   // Our Python script will take a bunch of measurements...
   // Remove any outliers, then return back an average
-  PythonShell.run('measure.py', null, function(err, result) {
-    if (!err) var rawLevel1 = Number(result.toString())
+  fs.readFile('./data/tank1Raw.txt', 'utf8' , (err, data) => {
+    if (err) {throw err;}
+    var rawLevel1 = Number(data);
     // Calculate the levels as a percentage
     var percentage1 = Number(Math.abs(100 - ((rawLevel1 - tank1_full) * 100) / (tank1_empty - tank1_full)).toFixed(1));
     if (percentage1 > 100) percentage1 = 100;

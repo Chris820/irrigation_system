@@ -11,7 +11,7 @@ Although I'm still using Python to take the water tank level measurements
 - Web-browser based UI, served over local network
 
 ## Installation
-1. Ensure Node.js and npm are installed on your Raspberry Pi
+1. Ensure Node.js and Python are installed on your Raspberry Pi
 2. Clone respository
 3. `npm install`
 4. Build the client: `cd client && npm run build`
