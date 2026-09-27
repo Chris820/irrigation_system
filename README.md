@@ -23,7 +23,8 @@ node server (main Pi)
  └── pigpiod on the tank 2 Pi (LAN) ── tank 2 sensor
 ```
 All GPIO goes through each Pi's [pigpio](https://abyz.me.uk/rpi/pigpio/) daemon.
-Pins are BCM numbers, set in [server/config.js](server/config.js) along with zones, tanks and calibration.
+Pins are physical pin numbers (as on the 40-pin header diagram), set in [server/config.js](server/config.js) along with
+zones, tanks and calibration. They're converted to the BCM numbers pigpio uses when the server starts.
 
 ## Setup
 
