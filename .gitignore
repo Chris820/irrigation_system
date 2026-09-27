@@ -3,3 +3,4 @@ client/dist/
 data/*.db
 data/*.db-*
 .DS_Store
+.env

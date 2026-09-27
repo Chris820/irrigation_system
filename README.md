@@ -28,12 +28,12 @@ Pins are BCM numbers, set in [server/config.js](server/config.js) along with zon
 ## Setup
 
 ### Main Pi
-1. Node.js 22.13 or later. On a 32-bit Pi (armv7l), install Node 22
+1. Raspberry Pi OS Bookworm (or Bullseye). 
+2. Node.js 22.13 or later. On a 32-bit Pi (armv7l), install Node 22
    with [nvm](https://github.com/nvm-sh/nvm) or the official `linux-armv7l` tarball.
-2. Start pigpiod now and at boot: `sudo systemctl enable --now pigpiod`
-3. Clone this repository, then `npm install` and `npm run build`.
-   If building the client on the Pi is too slow, run `npm run build` on another machine and copy `client/dist/` across.
-4. Set the tank 2 Pi's address if it isn't `tank2.local`: `TANK2_HOST=192.168.1.x`
+3. Install pigpio and start it now and at boot: `sudo apt install pigpio && sudo systemctl enable --now pigpiod`
+4. Clone this repository, then `npm install` and `npm run build`.
+5. Set the tank 2 Pi's address in .env: `TANK2_HOST=192.168.1.x`
 
 ### Tank 2 Pi
 1. Allow remote connections to pigpiod: `sudo raspi-config` → Interface Options → Remote GPIO → Yes.
